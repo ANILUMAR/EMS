@@ -1,0 +1,82 @@
+<header class="ems-topbar">
+  <div class="ems-topbar__heading">
+    <span class="ems-topbar__eyebrow">Workspace / {{ displayRole }}</span>
+    <h1 class="ems-topbar__title">{{ pageTitle() }}</h1>
+  </div>
+
+  <div class="ems-topbar__actions">
+    <button mat-button class="ems-topbar__ghost" [matMenuTriggerFor]="about">
+      <mat-icon>info</mat-icon>
+      <span>About</span>
+    </button>
+
+    <button class="ems-user" [matMenuTriggerFor]="profileMenu" (click)="loadUserProfile()">
+      <img *ngIf="avatarUrl" [src]="avatarUrl" alt="Profile image" class="ems-user__avatar" />
+      <span *ngIf="!avatarUrl" class="ems-user__avatar ems-user__avatar--initials">{{ userInitials }}</span>
+      <span class="ems-user__meta">
+        <strong>{{ displayName }}</strong>
+        <small>{{ displayRole }}</small>
+      </span>
+      <mat-icon class="ems-user__caret">expand_more</mat-icon>
+    </button>
+
+    <button mat-icon-button class="ems-topbar__icon" matTooltip="Sign out" (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</header>
+
+<mat-menu #profileMenu="matMenu" class="profile-menu">
+  <div class="profile-container" *ngIf="user; else profileLoading">
+    <img
+      *ngIf="avatarUrl"
+      [src]="avatarUrl"
+      alt="Profile image"
+      class="profile-image"
+    />
+    <span *ngIf="!avatarUrl" class="profile-image profile-image--initials">{{ userInitials }}</span>
+
+    <div class="profile-details">
+      <div class="username">{{ user.username }}</div>
+      <div class="user-email">{{ user.email }}</div>
+      <span class="ems-badge ems-badge--info">{{ user.role }}</span>
+    </div>
+  </div>
+
+  <ng-template #profileLoading>
+    <div class="profile-container profile-container--loading">
+      <mat-icon>hourglass_top</mat-icon>
+      <span>Loading profile…</span>
+    </div>
+  </ng-template>
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item routerLink="/profile">
+    <mat-icon>manage_accounts</mat-icon>
+    <span>Update profile</span>
+  </button>
+</mat-menu>
+
+<mat-menu #about="matMenu" class="about-menu">
+  <div class="about-panel">
+    <div class="about-panel__head">
+      <span class="about-panel__logo"><mat-icon>hub</mat-icon></span>
+      <div>
+        <strong>Employee Suite</strong>
+        <small>Version 1.0.0</small>
+      </div>
+    </div>
+
+    <p class="about-panel__copy">
+      Workforce management console for tracking hours, assigning work and reviewing delivery.
+    </p>
+
+    <ul class="about-panel__list">
+      <li><mat-icon>schedule</mat-icon> Track working hours and task status</li>
+      <li><mat-icon>assignment</mat-icon> Assign and monitor project progress</li>
+      <li><mat-icon>insights</mat-icon> Analyse productivity with live reports</li>
+      <li><mat-icon>admin_panel_settings</mat-icon> Manage roles and access</li>
+    </ul>
+  </div>
+</mat-menu>

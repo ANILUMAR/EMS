@@ -1,0 +1,10 @@
+<div class="ems-shell">
+  <app-sidebar *ngIf="showHeader"></app-sidebar>
+
+  <div class="ems-shell__main">
+    <app-header *ngIf="showHeader"></app-header>
+    <main class="ems-shell__content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

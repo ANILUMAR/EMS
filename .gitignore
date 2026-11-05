@@ -1,0 +1,26 @@
+# Dependencies and build output
+node_modules/
+dist/
+.angular/
+target/
+build/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Local run artefacts
+*.log
+uploads/
+
+# Tooling and OS noise
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.suo
+*.user
+
+# Local environment overrides
+.env
+.env.local
+*.local

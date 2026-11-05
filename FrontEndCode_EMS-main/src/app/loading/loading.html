@@ -1,0 +1,78 @@
+<div class="ems-landing">
+  <header class="ems-landing__nav">
+    <div class="ems-auth__logo">
+      <span class="ems-auth__mark"><mat-icon>hub</mat-icon></span>
+      Employee Suite
+    </div>
+
+    <div class="ems-landing__nav-actions">
+      <select class="ems-landing__lang" (change)="onLanguageChange($event)" aria-label="Select language">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="hi">Hindi</option>
+        <option value="de">German</option>
+        <option value="zh">Chinese</option>
+      </select>
+
+      <a class="ems-auth__link" routerLink="/login">Sign in</a>
+      <a mat-flat-button color="primary" routerLink="/register" class="ems-landing__cta-sm">Get started</a>
+    </div>
+  </header>
+
+  <main class="ems-landing__hero">
+    <span class="ems-landing__pill">
+      <mat-icon>bolt</mat-icon>
+      Workforce management, without the spreadsheets
+    </span>
+
+    <h1 class="ems-landing__title">
+      Everything your team needs,<br />
+      <em>nothing it doesn't.</em>
+    </h1>
+
+    <p class="ems-landing__lead">
+      Assign work, log hours and review delivery from a single console. Built for admins,
+      developers and testers who would rather ship than update status reports.
+    </p>
+
+    <div class="ems-landing__actions">
+      <a mat-flat-button color="primary" routerLink="/register" class="ems-landing__cta">
+        <mat-icon>rocket_launch</mat-icon>
+        Create your workspace
+      </a>
+      <a mat-stroked-button routerLink="/login" class="ems-landing__cta ems-landing__cta--ghost">
+        I already have an account
+      </a>
+    </div>
+  </main>
+
+  <section class="ems-landing__features">
+    <article class="ems-landing__feature">
+      <span class="ems-landing__icon"><mat-icon>view_kanban</mat-icon></span>
+      <h3>Task boards that stay current</h3>
+      <p>Assign, move and close work with priorities and due dates visible to everyone.</p>
+    </article>
+
+    <article class="ems-landing__feature">
+      <span class="ems-landing__icon"><mat-icon>schedule</mat-icon></span>
+      <h3>Timesheets without the chasing</h3>
+      <p>Log hours against real projects and review them in one place, ready for approvals.</p>
+    </article>
+
+    <article class="ems-landing__feature">
+      <span class="ems-landing__icon"><mat-icon>insights</mat-icon></span>
+      <h3>Delivery you can see</h3>
+      <p>Project health and team workload roll up automatically, so surprises surface early.</p>
+    </article>
+  </section>
+
+  <footer class="ems-landing__footer">
+    <span>&copy; 2025 Employee Suite</span>
+    <span class="ems-landing__footer-links">
+      <a routerLink="/login">Sign in</a>
+      <a routerLink="/register">Register</a>
+      <a routerLink="/forgotpassward">Reset password</a>
+    </span>
+  </footer>
+</div>

@@ -1,0 +1,117 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Settings</h1>
+      <p class="ems-page-subtitle">Manage your account, notifications and work defaults.</p>
+    </div>
+    <div class="ems-actions">
+      <a mat-stroked-button routerLink="/profile">
+        <mat-icon>manage_accounts</mat-icon>
+        Edit profile
+      </a>
+    </div>
+  </header>
+
+  <div class="set-grid">
+    <article class="ems-card set-profile">
+      <div class="set-profile__top">
+        <span class="set-profile__avatar">{{ initials }}</span>
+        <div class="set-profile__id">
+          <h2>{{ name }}</h2>
+          <p>{{ email || 'No email on file' }}</p>
+        </div>
+      </div>
+
+      <dl class="set-facts">
+        <div>
+          <dt>Role</dt>
+          <dd><span class="ems-badge ems-badge--info">{{ roleLabel }}</span></dd>
+        </div>
+        <div>
+          <dt>Workspace</dt>
+          <dd>Employee Management System</dd>
+        </div>
+        <div>
+          <dt>API</dt>
+          <dd class="set-mono">localhost:9001/api</dd>
+        </div>
+      </dl>
+
+      <button mat-stroked-button class="set-signout" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        Sign out of this device
+      </button>
+    </article>
+
+    <article class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>notifications</mat-icon> Notifications</h2>
+
+      <ul class="set-rows">
+        <li class="set-row" *ngFor="let row of preferenceRows">
+          <span class="set-row__icon"><mat-icon>{{ row.icon }}</mat-icon></span>
+          <span class="set-row__main">
+            <strong>{{ row.title }}</strong>
+            <small>{{ row.hint }}</small>
+          </span>
+          <button
+            type="button"
+            class="set-switch"
+            role="switch"
+            [attr.aria-checked]="prefs[row.key]"
+            [class.is-on]="prefs[row.key]"
+            (click)="toggle(row.key)">
+            <span class="set-switch__knob"></span>
+          </button>
+        </li>
+      </ul>
+    </article>
+
+    <article class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>schedule</mat-icon> Work defaults</h2>
+
+      <div class="set-field">
+        <span class="set-field__label">Default hours per entry</span>
+        <div class="ems-chip-row">
+          <button
+            type="button"
+            class="ems-chip"
+            *ngFor="let hours of hourOptions"
+            [class.is-active]="defaultHours === hours"
+            (click)="setHours(hours)">
+            {{ hours }}h
+          </button>
+        </div>
+      </div>
+
+      <div class="set-field">
+        <span class="set-field__label">Week starts on</span>
+        <div class="ems-chip-row">
+          <button type="button" class="ems-chip" [class.is-active]="weekStart === 'Monday'" (click)="setWeekStart('Monday')">Monday</button>
+          <button type="button" class="ems-chip" [class.is-active]="weekStart === 'Sunday'" (click)="setWeekStart('Sunday')">Sunday</button>
+        </div>
+      </div>
+
+      <p class="set-note">These defaults apply to the timesheet form on this browser.</p>
+    </article>
+
+    <article class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>palette</mat-icon> Appearance</h2>
+
+      <div class="set-theme">
+        <span class="set-theme__swatch"></span>
+        <div>
+          <strong>Dark workspace</strong>
+          <small>The interface ships with a single dark theme tuned for long sessions.</small>
+        </div>
+        <span class="ems-badge ems-badge--neutral">Active</span>
+      </div>
+
+      <div class="set-about">
+        <span>Version</span><span class="set-mono">1.0.0</span>
+      </div>
+      <div class="set-about">
+        <span>Build</span><span class="set-mono">Angular 20 · Spring Boot 2.4</span>
+      </div>
+    </article>
+  </div>
+</section>

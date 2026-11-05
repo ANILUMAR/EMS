@@ -1,0 +1,184 @@
+<div class="ems-page">
+  <div class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Hi {{ firstName }}</h1>
+      <p class="ems-page-subtitle">
+        {{ today | date:'EEEE, d MMMM' }} · {{ roleLabel }} board · {{ openTasks }} open task(s)
+      </p>
+    </div>
+
+    <div class="ems-actions">
+      <button mat-stroked-button (click)="goToSubmission()">
+        <mat-icon>edit_calendar</mat-icon>
+        Log hours
+      </button>
+      <button mat-flat-button color="primary" (click)="goToTasks()">
+        <mat-icon>task_alt</mat-icon>
+        Open my tasks
+      </button>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Assigned to me</span>
+      <strong class="ems-stat__value">{{ assignedTasks }}</strong>
+      <span class="ems-stat__hint">{{ inProgressTasks.length }} in progress</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Completed</span>
+      <strong class="ems-stat__value">{{ completedTasks }}</strong>
+      <span class="ems-stat__hint">{{ completionRate }}% of my workload</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Hours today</span>
+      <strong class="ems-stat__value">{{ hoursLoggedToday }}<small>h</small></strong>
+      <span class="ems-stat__hint">{{ hoursLoggedTotal }}h logged in total</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Timesheet</span>
+      <strong class="ems-stat__value ems-stat__value--text">{{ timesheetStatus }}</strong>
+      <span class="ems-stat__hint">{{ myTimesheets.length }} entry(ies) submitted</span>
+    </article>
+  </div>
+
+  <div class="ems-dash-grid">
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>view_kanban</mat-icon>
+        My queue
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && myTasks.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Nothing assigned yet</h3>
+        <p>When an admin assigns work it will show up here.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="myTasks.length > 0">
+        <li class="ems-rows__item" *ngFor="let task of myTasks">
+          <div class="ems-rows__main">
+            <strong>{{ task.title }}</strong>
+            <small>{{ task.project?.name || 'No project' }} · {{ task.description || 'No description' }}</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge" [ngClass]="{
+              'ems-badge--success': task.status === 'DONE',
+              'ems-badge--info': task.status === 'IN_PROGRESS',
+              'ems-badge--neutral': task.status === 'TODO'
+            }">{{ task.status }}</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>insights</mat-icon>
+        Progress
+      </h2>
+
+      <div class="ems-pipeline">
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge ems-badge--neutral">To do</span>
+            <strong>{{ todoTasks.length }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill is-neutral"
+                  [style.width.%]="assignedTasks ? (todoTasks.length / assignedTasks) * 100 : 0"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge ems-badge--info">In progress</span>
+            <strong>{{ inProgressTasks.length }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill is-info"
+                  [style.width.%]="assignedTasks ? (inProgressTasks.length / assignedTasks) * 100 : 0"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge ems-badge--success">Done</span>
+            <strong>{{ completedTasks }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill is-success" [style.width.%]="completionRate"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__summary">
+          <div>
+            <span class="ems-pipeline__summary-value">{{ completionRate }}%</span>
+            <span class="ems-pipeline__summary-label">completed overall</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="ems-dash-grid">
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>folder_open</mat-icon>
+        My projects
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && myProjects.length === 0">
+        <mat-icon>folder_off</mat-icon>
+        <h3>No projects yet</h3>
+        <p>Projects appear once your tasks are linked to one.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="myProjects.length > 0">
+        <li class="ems-rows__item" *ngFor="let project of myProjects">
+          <div class="ems-rows__main">
+            <strong>{{ project.name }}</strong>
+            <small>{{ project.taskCount }} task(s) assigned to me</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge ems-badge--neutral">{{ project.doneCount }}/{{ project.taskCount }} done</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>history</mat-icon>
+        My latest hours
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && recentActivity.length === 0">
+        <mat-icon>event_busy</mat-icon>
+        <h3>No hours logged</h3>
+        <p>Submit a timesheet to see it here.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="recentActivity.length > 0">
+        <li class="ems-rows__item" *ngFor="let entry of recentActivity">
+          <div class="ems-rows__main">
+            <strong>{{ entry.project || 'Unassigned' }}</strong>
+            <small>{{ entry.date }}</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge ems-badge--neutral">{{ entry.status || 'LOGGED' }}</span>
+            <span class="ems-rows__hours">{{ entry.hours }}h</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>

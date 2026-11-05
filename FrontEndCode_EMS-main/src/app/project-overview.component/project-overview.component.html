@@ -1,0 +1,162 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Project portfolio</h1>
+      <p class="ems-page-subtitle">Delivery health for every project in the workspace.</p>
+    </div>
+    <div class="ems-actions">
+      <button mat-stroked-button matTooltip="Reload from the server" (click)="reload()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Projects</span>
+      <span class="ems-stat__value">{{ totalProjects }}</span>
+      <span class="ems-stat__hint">Tracked in the portfolio</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Open tasks</span>
+      <span class="ems-stat__value">{{ openTasks }}</span>
+      <span class="ems-stat__hint">{{ totalTasks }} tasks in total</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Completion</span>
+      <span class="ems-stat__value">{{ completionRate }}%</span>
+      <span class="ems-stat__hint">Across all projects</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Contributors</span>
+      <span class="ems-stat__value">{{ contributorCount }}</span>
+      <span class="ems-stat__hint">People with assigned work</span>
+    </article>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="po-layout">
+    <div class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>folder_open</mat-icon> Projects</h2>
+
+      <div class="po-list" *ngIf="rows.length; else noProjects">
+        <button
+          type="button"
+          class="po-row"
+          *ngFor="let row of rows"
+          [class.is-selected]="row.id === selected?.id"
+          (click)="select(row)">
+          <span class="po-row__main">
+            <strong>{{ row.name }}</strong>
+            <small>{{ row.owner }} &middot; {{ row.total }} tasks</small>
+          </span>
+          <span class="po-row__side">
+            <span class="ems-pipeline__track ems-pipeline__track--sm">
+              <span class="ems-pipeline__fill" [ngClass]="fillClass(row.progress)" [style.width.%]="row.progress"></span>
+            </span>
+            <span class="po-row__pct">{{ row.progress }}%</span>
+          </span>
+        </button>
+      </div>
+
+      <ng-template #noProjects>
+        <div class="ems-empty">
+          <mat-icon>folder_off</mat-icon>
+          <h3>No projects yet</h3>
+          <p>Projects created in the workspace show up here with live progress.</p>
+          <a mat-stroked-button class="ems-empty__cta" routerLink="/tasks">Open the task board</a>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="ems-card po-detail" *ngIf="selected as project; else noSelection">
+      <header class="po-detail__head">
+        <span class="ems-badge" [ngClass]="project.statusClass">{{ project.status }}</span>
+        <h2 class="po-detail__title">{{ project.name }}</h2>
+        <p class="po-detail__desc">{{ project.description }}</p>
+      </header>
+
+      <div class="ems-pipeline">
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <strong>Delivery progress</strong>
+            <span class="ems-dim">{{ project.done }} of {{ project.total }} tasks done</span>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill" [ngClass]="fillClass(project.progress)" [style.width.%]="project.progress"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="po-meta">
+        <div>
+          <span class="po-meta__label">Owner</span>
+          <span class="po-meta__value">{{ project.owner }}</span>
+        </div>
+        <div>
+          <span class="po-meta__label">Completion</span>
+          <span class="po-meta__value">{{ project.progress }}%</span>
+        </div>
+      </div>
+
+      <h3 class="ems-section-title po-sub"><mat-icon>group</mat-icon> Contributors</h3>
+      <div class="ems-chip-row" *ngIf="project.contributors.length; else noTeam">
+        <span class="po-person" *ngFor="let person of project.contributors">
+          <span class="ems-avatar-sm">{{ initials(person) }}</span>
+          {{ person }}
+        </span>
+      </div>
+      <ng-template #noTeam>
+        <p class="po-none">No contributors assigned yet.</p>
+      </ng-template>
+
+      <h3 class="ems-section-title po-sub"><mat-icon>checklist</mat-icon> Task breakdown</h3>
+      <div class="ems-table-wrap" *ngIf="selectedTasks.length; else noTasks">
+        <table>
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Owner</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let task of selectedTasks">
+              <td>
+                <span class="ems-rows__main">
+                  <strong>{{ task.title }}</strong>
+                  <small>{{ task.description || 'No description' }}</small>
+                </span>
+              </td>
+              <td>{{ task.user?.username || task.user?.name || task.user?.email || '—' }}</td>
+              <td>
+                <span class="ems-badge" [ngClass]="statusBadge(task)">{{ statusLabel(task) }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noTasks>
+        <p class="po-none">No tasks have been linked to this project yet.</p>
+      </ng-template>
+    </div>
+
+    <ng-template #noSelection>
+      <div class="ems-card po-detail">
+        <div class="ems-empty">
+          <mat-icon>touch_app</mat-icon>
+          <h3>Select a project</h3>
+          <p>Pick a project on the left to see its progress, contributors and tasks.</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</section>

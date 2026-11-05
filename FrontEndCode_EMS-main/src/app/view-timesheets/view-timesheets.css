@@ -1,0 +1,36 @@
+:host { display: block; }
+
+.ts-toolbar {
+  margin: 18px 0 14px;
+}
+
+.ts-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ts-chip__count {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: var(--ems-radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ems-text-2);
+}
+
+.ts-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ts-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}

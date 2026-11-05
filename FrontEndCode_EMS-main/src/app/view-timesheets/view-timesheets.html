@@ -1,0 +1,121 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Timesheets</h1>
+      <p class="ems-page-subtitle">Every hour logged across the workspace.</p>
+    </div>
+    <div class="ems-actions">
+      <button mat-stroked-button matTooltip="Reload timesheets" (click)="loadTimesheets()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <a mat-flat-button color="primary" routerLink="/timesheets/new">
+        <mat-icon>add</mat-icon>
+        Log time
+      </a>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Entries</span>
+      <span class="ems-stat__value">{{ filtered.length }}</span>
+      <span class="ems-stat__hint">In the current view</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Hours</span>
+      <span class="ems-stat__value">{{ totalHours }}h</span>
+      <span class="ems-stat__hint">Total for this view</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Pending</span>
+      <span class="ems-stat__value">{{ pendingCount }}</span>
+      <span class="ems-stat__hint">Awaiting approval</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Approved</span>
+      <span class="ems-stat__value">{{ approvedCount }}</span>
+      <span class="ems-stat__hint">Signed off</span>
+    </article>
+  </div>
+
+  <div class="ems-toolbar ts-toolbar">
+    <div class="ts-filters">
+      <mat-form-field appearance="outline" class="ems-search">
+        <mat-label>Search entries</mat-label>
+        <input matInput [(ngModel)]="search" placeholder="Employee, project, date…" />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <button
+        type="button"
+        class="ems-chip"
+        [class.is-active]="mineOnly"
+        (click)="mineOnly = !mineOnly">
+        Only my entries
+      </button>
+    </div>
+
+    <div class="ems-chip-row">
+      <button
+        type="button"
+        class="ems-chip"
+        *ngFor="let chip of statusChips"
+        [class.is-active]="status === chip.key"
+        (click)="status = chip.key">
+        {{ chip.label }}
+        <span class="ts-chip__count">{{ chip.count }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="ems-table-wrap" *ngIf="filtered.length; else noEntries">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Date</th>
+          <th>Project</th>
+          <th class="ts-num">Hours</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of filtered">
+          <td>
+            <span class="ts-person">
+              <span class="ems-avatar-sm">{{ initials(entry.employeeName) }}</span>
+              <span class="ems-rows__main">
+                <strong>{{ entry.employeeName || 'Unknown' }}</strong>
+                <small>{{ weekDay(entry.date) }}</small>
+              </span>
+            </span>
+          </td>
+          <td>{{ formatDate(entry.date) }}</td>
+          <td>{{ entry.project || '—' }}</td>
+          <td class="ts-num">{{ entry.hours }}h</td>
+          <td>
+            <span class="ems-badge" [ngClass]="statusBadge(entry.status)">{{ statusLabel(entry.status) }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #noEntries>
+    <div class="ems-empty">
+      <mat-icon>schedule</mat-icon>
+      <h3>No timesheet entries</h3>
+      <p>Nothing matches the current filters. Log time or clear the filters to see everything.</p>
+      <a mat-stroked-button class="ems-empty__cta" routerLink="/timesheets/new">Log time</a>
+    </div>
+  </ng-template>
+</section>

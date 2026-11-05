@@ -1,0 +1,115 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Employee directory</h1>
+      <p class="ems-page-subtitle">Everyone with access to the workspace.</p>
+    </div>
+    <div class="ems-actions">
+      <button mat-stroked-button matTooltip="Reload the directory" (click)="reload()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">People</span>
+      <span class="ems-stat__value">{{ employees.length }}</span>
+      <span class="ems-stat__hint">On the workspace</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Roles</span>
+      <span class="ems-stat__value">{{ rolesCovered }}</span>
+      <span class="ems-stat__hint">Distinct access levels</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Admins</span>
+      <span class="ems-stat__value">{{ adminCount }}</span>
+      <span class="ems-stat__hint">Full workspace access</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Photos</span>
+      <span class="ems-stat__value">{{ photoCount }}</span>
+      <span class="ems-stat__hint">Profiles with an avatar</span>
+    </article>
+  </div>
+
+  <div class="ems-card dir-toolbar">
+    <mat-form-field appearance="outline" class="ems-search">
+      <mat-label>Search people</mat-label>
+      <input matInput [(ngModel)]="search" placeholder="Name, email, role…" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="ems-chip-row">
+      <button
+        type="button"
+        class="ems-chip"
+        *ngFor="let chip of roleChips"
+        [class.is-active]="role === chip.key"
+        (click)="filterByRole(chip.key)">
+        {{ chip.label }}
+        <span class="dir-chip__count">{{ chip.count }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="dir-grid" *ngIf="filteredEmployees.length; else noPeople">
+    <article class="dir-card" *ngFor="let employee of filteredEmployees">
+      <div class="dir-card__top">
+        <img
+          *ngIf="hasPhoto(employee); else initialsTpl"
+          class="dir-card__avatar"
+          [src]="photoUrl(employee)"
+          [alt]="employee.name"
+          (error)="onImageError(employee)" />
+        <ng-template #initialsTpl>
+          <span class="dir-card__avatar dir-card__avatar--initials">{{ initials(employee.name) }}</span>
+        </ng-template>
+
+        <div class="dir-card__id">
+          <h3>{{ employee.name || 'Unnamed employee' }}</h3>
+          <span class="ems-badge" [ngClass]="roleBadge(employee.role)">{{ roleLabel(employee.role) }}</span>
+        </div>
+
+        <button mat-icon-button matTooltip="Edit employee" (click)="editEmployee(employee)" aria-label="Edit employee">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <p class="dir-card__designation">{{ employee.designation || 'Team member' }}</p>
+
+      <ul class="dir-card__contact">
+        <li>
+          <mat-icon>mail</mat-icon>
+          <span>{{ employee.email || 'No email on file' }}</span>
+        </li>
+        <li>
+          <mat-icon>call</mat-icon>
+          <span>{{ employee.phoneNumber || 'No phone on file' }}</span>
+        </li>
+        <li>
+          <mat-icon>place</mat-icon>
+          <span>{{ employee.address || 'No address on file' }}</span>
+        </li>
+      </ul>
+    </article>
+  </div>
+
+  <ng-template #noPeople>
+    <div class="ems-empty">
+      <mat-icon>group_off</mat-icon>
+      <h3>No people match this view</h3>
+      <p>Try another search term or pick a different role.</p>
+    </div>
+  </ng-template>
+</section>

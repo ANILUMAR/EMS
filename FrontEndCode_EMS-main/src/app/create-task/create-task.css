@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.ems-create-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 1080px;
+}
+
+.ems-create-grid .ems-card {
+  display: flex;
+  flex-direction: column;
+}

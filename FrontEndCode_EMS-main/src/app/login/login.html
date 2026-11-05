@@ -1,0 +1,69 @@
+<div class="ems-auth">
+  <section class="ems-auth__brand">
+    <div class="ems-auth__logo">
+      <span class="ems-auth__mark"><mat-icon>hub</mat-icon></span>
+      Employee Suite
+    </div>
+
+    <h1 class="ems-auth__headline">Run your workforce from <em>one place</em>.</h1>
+    <p class="ems-auth__lead">
+      Tasks, projects, timesheets and people stay in sync — so everyone knows what to do next.
+    </p>
+
+    <ul class="ems-auth__points">
+      <li>
+        <mat-icon>task_alt</mat-icon>
+        <span><strong>Live task tracking</strong>Assign, review and close work from a single board.</span>
+      </li>
+      <li>
+        <mat-icon>schedule</mat-icon>
+        <span><strong>Timesheets that add up</strong>Log hours per project and get them approved.</span>
+      </li>
+      <li>
+        <mat-icon>insights</mat-icon>
+        <span><strong>Delivery insight</strong>Spot overdue work before it becomes a problem.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="ems-auth__panel">
+    <div class="ems-auth__card">
+      <span class="ems-auth__eyebrow">Welcome back</span>
+      <h2>Sign in</h2>
+      <p class="ems-auth__sub">Use your work email to open the console.</p>
+
+      <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <mat-form-field appearance="outline">
+          <mat-label>Work email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email" />
+          <mat-icon matPrefix>mail_outline</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password" autocomplete="current-password" />
+          <mat-icon matPrefix>lock_outline</mat-icon>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="ems-auth__submit"
+          [disabled]="loginForm.invalid || loading">
+          {{ loading ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="ems-auth__foot">
+        <span>New here? <a class="ems-auth__link" (click)="goToRegister()">Create an account</a></span>
+        <a class="ems-auth__link" (click)="goToForgotPassword()">Forgot password?</a>
+      </div>
+    </div>
+  </section>
+</div>

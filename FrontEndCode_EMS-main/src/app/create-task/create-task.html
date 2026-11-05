@@ -1,0 +1,133 @@
+<div class="ems-page">
+  <div class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Create task</h1>
+      <p class="ems-page-subtitle">Assign work with an owner, dates and a delivery context.</p>
+    </div>
+
+    <div class="ems-actions">
+      <button mat-stroked-button type="button" (click)="openTaskDialog()">
+        <mat-icon>content_copy</mat-icon>
+        Load from existing
+      </button>
+      <button mat-stroked-button type="button" (click)="taskForm.reset()">
+        <mat-icon>restart_alt</mat-icon>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="ems-create-grid">
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>assignment</mat-icon>
+        Task details
+      </h2>
+
+      <div class="ems-form-grid ems-form-grid--2">
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Task title</mat-label>
+          <input matInput formControlName="title" required placeholder="e.g. Fix login redirect" />
+          <mat-hint>What exactly needs to be done</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Project</mat-label>
+          <mat-select formControlName="project" required>
+            <mat-option *ngFor="let project of projects" [value]="project.projectName">
+              {{ project.projectName }}
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="!projects.length">No projects yet — add one from the project overview</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Assign to</mat-label>
+          <mat-select formControlName="assignedTo" required>
+            <mat-option *ngFor="let user of assignedUsers" [value]="user.id">
+              {{ user.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority" required>
+            <mat-option value="High">High</mat-option>
+            <mat-option value="Medium">Medium</mat-option>
+            <mat-option value="Low">Low</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Start date</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate" required />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Due date</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate" required />
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>layers</mat-icon>
+        Where in the app
+      </h2>
+
+      <div class="ems-form-grid">
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Module</mat-label>
+          <input matInput formControlName="module" placeholder="e.g. Authentication" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Sub module</mat-label>
+          <input matInput formControlName="subModule" placeholder="e.g. Password reset" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ems-field">
+          <mat-label>Screen</mat-label>
+          <input matInput formControlName="screen" placeholder="e.g. Forgot password" />
+        </mat-form-field>
+      </div>
+
+      <p class="ems-dim" *ngIf="!modules.length">
+        Module, sub module and screen are free text while the master lists are empty.
+      </p>
+
+      <mat-form-field appearance="outline" class="ems-field">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="4"
+                  placeholder="Context, acceptance criteria, links…"></textarea>
+      </mat-form-field>
+
+      <label class="ems-filepick" for="fileInput">
+        <mat-icon>attach_file</mat-icon>
+        <span *ngIf="!selectedFile">Attach a file (PDF, DOC, PNG, JPG — max 5 MB)</span>
+        <span *ngIf="selectedFile" class="ems-filepick__name">{{ selectedFile.name }}</span>
+      </label>
+      <input
+        type="file"
+        id="fileInput"
+        (change)="onFileSelected($event)"
+        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+        hidden
+      />
+
+      <div class="ems-form-actions">
+        <a mat-stroked-button routerLink="/tasks">Cancel</a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid">
+          <mat-icon>send</mat-icon>
+          Create task
+        </button>
+      </div>
+    </section>
+  </form>
+</div>

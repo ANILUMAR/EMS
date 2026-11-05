@@ -1,0 +1,131 @@
+<div class="ems-page">
+  <div class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Verification board</h1>
+      <p class="ems-page-subtitle">
+        {{ today | date:'EEEE, d MMMM' }} · {{ pending }} item(s) awaiting verification
+      </p>
+    </div>
+
+    <div class="ems-actions">
+      <button mat-stroked-button (click)="goToTimesheet()">
+        <mat-icon>edit_calendar</mat-icon>
+        Log hours
+      </button>
+      <button mat-flat-button color="primary" (click)="goToTasks()">
+        <mat-icon>bug_report</mat-icon>
+        My queue
+      </button>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Pending verification</span>
+      <strong class="ems-stat__value">{{ pending }}</strong>
+      <span class="ems-stat__hint">{{ inProgress.length }} already in progress</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Verified</span>
+      <strong class="ems-stat__value">{{ completed }}</strong>
+      <span class="ems-stat__hint">{{ progress }}% of your queue</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Total assigned</span>
+      <strong class="ems-stat__value">{{ myTasks.length }}</strong>
+      <span class="ems-stat__hint">Across all test cycles</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Signed in as</span>
+      <strong class="ems-stat__value ems-stat__value--text">{{ firstName }}</strong>
+      <span class="ems-stat__hint">TESTER access</span>
+    </article>
+  </div>
+
+  <div class="ems-dash-grid">
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>checklist</mat-icon>
+        Test queue
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && myTasks.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Nothing to verify</h3>
+        <p>Items assigned for testing will appear here.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="myTasks.length > 0">
+        <li class="ems-rows__item" *ngFor="let task of myTasks">
+          <div class="ems-rows__main">
+            <strong>{{ task.title }}</strong>
+            <small>{{ task.project?.name || 'No project' }} · {{ task.description || 'No description' }}</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge" [ngClass]="{
+              'ems-badge--success': task.status === 'DONE',
+              'ems-badge--info': task.status === 'IN_PROGRESS',
+              'ems-badge--neutral': task.status === 'TODO'
+            }">{{ task.status }}</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>rule</mat-icon>
+        Execution progress
+      </h2>
+
+      <div class="ems-pipeline">
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge ems-badge--success">Verified</span>
+            <strong>{{ completed }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill is-success" [style.width.%]="progress"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge ems-badge--info">In progress</span>
+            <strong>{{ inProgress.length }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill is-info"
+                  [style.width.%]="myTasks.length ? (inProgress.length / myTasks.length) * 100 : 0"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__summary">
+          <div>
+            <span class="ems-pipeline__summary-value">{{ progress }}%</span>
+            <span class="ems-pipeline__summary-label">of your queue verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ems-actions ems-actions--stack">
+        <a mat-stroked-button routerLink="/tasks">
+          <mat-icon>list_alt</mat-icon>
+          All tasks
+        </a>
+        <a mat-stroked-button routerLink="/my-projects">
+          <mat-icon>folder_open</mat-icon>
+          My projects
+        </a>
+      </div>
+    </section>
+  </div>
+</div>

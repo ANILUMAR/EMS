@@ -1,0 +1,115 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Update profile</h1>
+      <p class="ems-page-subtitle">Keep your contact details and access level up to date.</p>
+    </div>
+    <div class="ems-actions">
+      <a mat-stroked-button routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        Settings
+      </a>
+    </div>
+  </header>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="up-layout">
+    <aside class="ems-card up-identity">
+      <img *ngIf="profilePhotoUrl; else initialsTpl" class="up-avatar" [src]="profilePhotoUrl" alt="Profile photo" />
+      <ng-template #initialsTpl>
+        <span class="up-avatar up-avatar--initials">{{ initials }}</span>
+      </ng-template>
+
+      <h2 class="up-name">{{ displayName }}</h2>
+      <p class="up-email">{{ email || 'No email on file' }}</p>
+      <span class="ems-badge ems-badge--info">{{ roleLabel }}</span>
+
+      <label class="ems-filepick up-filepick">
+        <mat-icon>photo_camera</mat-icon>
+        <span>
+          {{ selectedFile ? 'Selected: ' : 'Change photo' }}
+          <span class="ems-filepick__name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+        </span>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+      </label>
+
+      <div class="up-strength">
+        <div class="ems-pipeline__meta">
+          <strong>Profile strength</strong>
+          <span class="ems-dim">{{ completeness }}%</span>
+        </div>
+        <div class="ems-pipeline__track">
+          <span
+            class="ems-pipeline__fill"
+            [class.is-success]="completeness === 100"
+            [class.is-info]="completeness < 100"
+            [style.width.%]="completeness"></span>
+        </div>
+        <p class="up-hint">
+          {{ completeness === 100 ? 'Everything is filled in. Nice work.' : 'Add the missing details below to complete your profile.' }}
+        </p>
+      </div>
+    </aside>
+
+    <div class="ems-card">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="ems-form-section up-section">
+          <h3 class="ems-form-section__title">Personal details</h3>
+          <div class="ems-form-grid ems-form-grid--2">
+            <mat-form-field appearance="outline" class="ems-field">
+              <mat-label>Full name</mat-label>
+              <input matInput formControlName="name" />
+              <mat-error *ngIf="profileForm.get('name')?.hasError('required')">Name is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="ems-field">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" readonly />
+              <mat-icon matSuffix matTooltip="Email is your sign-in identity">lock</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="ems-form-section">
+          <h3 class="ems-form-section__title">Contact</h3>
+          <div class="ems-form-grid ems-form-grid--2">
+            <mat-form-field appearance="outline" class="ems-field">
+              <mat-label>Phone number</mat-label>
+              <input matInput formControlName="phoneNumber" placeholder="10 digit number" />
+              <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('pattern')">Use a 10 digit phone number</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="ems-field">
+              <mat-label>Address</mat-label>
+              <input matInput formControlName="address" placeholder="City, state" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="ems-form-section">
+          <h3 class="ems-form-section__title">Access</h3>
+          <mat-form-field appearance="outline" class="ems-field up-role">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role" [disabled]="!canEditRole">
+              <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="profileForm.get('role')?.hasError('required')">Role is required</mat-error>
+          </mat-form-field>
+          <p class="up-hint">Only an admin can change a role. Changes take effect the next time you sign in.</p>
+        </div>
+
+        <div class="ems-form-actions">
+          <button mat-stroked-button type="button" (click)="reset()">Discard changes</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+            <mat-icon>save</mat-icon>
+            {{ saving ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

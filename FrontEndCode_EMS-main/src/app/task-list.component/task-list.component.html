@@ -1,0 +1,100 @@
+<div class="ems-page">
+  <div class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Task board</h1>
+      <p class="ems-page-subtitle">
+        {{ isAdmin ? 'Every task across the workspace' : 'Work assigned to you' }} ·
+        {{ tasks.length }} total · {{ overdueCount }} past due
+      </p>
+    </div>
+
+    <div class="ems-actions">
+      <button mat-stroked-button (click)="taskModelResponse()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <a *ngIf="isAdmin" mat-flat-button color="primary" routerLink="/tasks/new">
+        <mat-icon>add</mat-icon>
+        New task
+      </a>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="ems-toolbar">
+    <div class="ems-chip-row">
+      <button
+        class="ems-chip"
+        *ngFor="let chip of priorityCounts"
+        [class.is-active]="priority === chip.key"
+        (click)="setPriority(chip.key)">
+        {{ chip.label }} ({{ chip.count }})
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="ems-search">
+      <mat-label>Search tasks</mat-label>
+      <input matInput [(ngModel)]="search" placeholder="Title, project, owner…" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="ems-empty" *ngIf="!loading && filteredTasks.length === 0">
+    <mat-icon>inbox</mat-icon>
+    <h3>No tasks match</h3>
+    <p *ngIf="tasks.length === 0">There are no tasks yet — create the first one.</p>
+    <p *ngIf="tasks.length > 0">Try clearing the search or picking a different priority.</p>
+  </div>
+
+  <div class="ems-task-grid" *ngIf="filteredTasks.length > 0">
+    <article class="ems-task-card" *ngFor="let task of filteredTasks" [ngClass]="priorityClass(task.priority)">
+      <div class="ems-task-card__head">
+        <div>
+          <h3 class="ems-task-card__title">{{ task.taskTitle }}</h3>
+          <p class="ems-task-card__sub">
+            <mat-icon style="font-size:13px;width:13px;height:13px">folder_open</mat-icon>
+            {{ task.project || 'No project' }}
+          </p>
+        </div>
+        <span class="ems-badge" [ngClass]="priorityBadge(task.priority)">{{ task.priority || 'NORMAL' }}</span>
+      </div>
+
+      <p class="ems-task-card__desc">{{ task.description || 'No description provided.' }}</p>
+
+      <div class="ems-task-meta">
+        <span *ngIf="task.module"><mat-icon>widgets</mat-icon>{{ task.module }}</span>
+        <span *ngIf="task.subModule"><mat-icon>account_tree</mat-icon>{{ task.subModule }}</span>
+        <span *ngIf="task.screen"><mat-icon>desktop_windows</mat-icon>{{ task.screen }}</span>
+      </div>
+
+      <div class="ems-task-meta">
+        <span><mat-icon>play_circle</mat-icon>{{ task.startDate | date:'dd MMM' }}</span>
+        <span><mat-icon>flag</mat-icon>{{ task.endDate | date:'dd MMM yyyy' }}</span>
+      </div>
+
+      <div class="ems-task-card__foot">
+        <div class="ems-task-card__owner">
+          <span class="ems-avatar-sm">{{ initials(task.assignedToName || '') }}</span>
+          <span>{{ task.assignedToName || 'Unassigned' }}</span>
+        </div>
+
+        <div class="ems-actions">
+          <a
+            *ngIf="task.attachmentPath"
+            mat-icon-button
+            matTooltip="Open attachment"
+            (click)="openFilePopup(task.attachmentPath)">
+            <mat-icon>attach_file</mat-icon>
+          </a>
+          <button mat-icon-button matTooltip="Delete task" (click)="deleteAttachment(task.id)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>

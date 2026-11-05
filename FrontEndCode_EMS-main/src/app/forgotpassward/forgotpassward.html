@@ -1,0 +1,62 @@
+<div class="ems-auth">
+  <section class="ems-auth__brand">
+    <div class="ems-auth__logo">
+      <span class="ems-auth__mark"><mat-icon>hub</mat-icon></span>
+      Employee Suite
+    </div>
+
+    <h1 class="ems-auth__headline">Locked out? <em>Let's fix that.</em></h1>
+    <p class="ems-auth__lead">
+      We'll email a secure reset link to your work address. The link expires after a short window.
+    </p>
+
+    <ul class="ems-auth__points">
+      <li>
+        <mat-icon>mark_email_read</mat-icon>
+        <span><strong>Check your inbox</strong>The reset mail arrives within a minute or two.</span>
+      </li>
+      <li>
+        <mat-icon>verified_user</mat-icon>
+        <span><strong>Nobody else can read it</strong>Links are single use and tied to your account.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="ems-auth__panel">
+    <div class="ems-auth__card">
+      <span class="ems-auth__eyebrow">Account recovery</span>
+      <h2>Reset your password</h2>
+      <p class="ems-auth__sub">Enter the email tied to your EMS account.</p>
+
+      <div class="ems-auth__note" *ngIf="submitted">
+        <mat-icon>mark_email_read</mat-icon>
+        <span>If an account exists for {{ sentTo }}, a reset link is on its way.</span>
+      </div>
+
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Work email</mat-label>
+          <input matInput formControlName="email" type="email" />
+          <mat-icon matPrefix>mail_outline</mat-icon>
+          <mat-error *ngIf="forgotPasswordForm.get('email')?.hasError('required')">
+            Email is required
+          </mat-error>
+          <mat-error *ngIf="forgotPasswordForm.get('email')?.hasError('email')">
+            Enter a valid email
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="ems-auth__submit">
+          Send reset link
+        </button>
+      </form>
+
+      <div class="ems-auth__foot">
+        <a class="ems-auth__link" routerLink="/login">
+          <mat-icon>arrow_back</mat-icon>
+          Back to sign in
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

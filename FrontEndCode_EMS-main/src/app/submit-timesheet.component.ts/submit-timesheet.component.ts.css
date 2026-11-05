@@ -1,0 +1,37 @@
+:host { display: block; }
+
+.ts-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.ts-quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  font-size: 12px;
+}
+
+.ts-view-all {
+  width: 100%;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+.ts-layout .ems-form-section mat-form-field { max-width: 280px; }
+
+.ems-form-actions mat-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  margin-right: 4px;
+}
+
+@media (max-width: 1080px) {
+  .ts-layout { grid-template-columns: 1fr; }
+}

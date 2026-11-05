@@ -1,0 +1,139 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Submit timesheet</h1>
+      <p class="ems-page-subtitle">Log the hours you worked against a project.</p>
+    </div>
+    <div class="ems-actions">
+      <a mat-stroked-button routerLink="/timesheets">
+        <mat-icon>table_rows</mat-icon>
+        All timesheets
+      </a>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Today</span>
+      <span class="ems-stat__value">{{ todayHours }}h</span>
+      <span class="ems-stat__hint">Logged for today</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">This week</span>
+      <span class="ems-stat__value">{{ weekHours }}h</span>
+      <span class="ems-stat__hint">Monday to today</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Pending</span>
+      <span class="ems-stat__value">{{ pendingCount }}</span>
+      <span class="ems-stat__hint">Awaiting approval</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Projects</span>
+      <span class="ems-stat__value">{{ projectOptions.length }}</span>
+      <span class="ems-stat__hint">Available to log against</span>
+    </article>
+  </div>
+
+  <div class="ts-layout">
+    <div class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>edit_calendar</mat-icon> New entry</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="ems-form-grid">
+          <mat-form-field appearance="outline" class="ems-field">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="date" />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="form.get('date')?.hasError('required')">Date is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="ems-field">
+            <mat-label>Project</mat-label>
+            <mat-select formControlName="project">
+              <mat-option *ngFor="let project of projectOptions" [value]="project">{{ project }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('project')?.hasError('required')">Project is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="ems-field">
+            <mat-label>Hours worked</mat-label>
+            <input matInput type="number" min="1" max="12" formControlName="hours" />
+            <mat-error *ngIf="form.get('hours')?.hasError('required')">Hours are required</mat-error>
+            <mat-error *ngIf="form.get('hours')?.hasError('min')">Minimum 1 hour</mat-error>
+            <mat-error *ngIf="form.get('hours')?.hasError('max')">Maximum 12 hours</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="ts-quick">
+          <span class="ems-dim">Quick fill</span>
+          <button type="button" class="ems-chip" *ngFor="let hours of [4, 6, 8, 9]" (click)="setHours(hours)">
+            {{ hours }}h
+          </button>
+        </div>
+
+        <div class="ems-form-section">
+          <h3 class="ems-form-section__title">Submission</h3>
+          <mat-form-field appearance="outline" class="ems-field">
+            <mat-label>Save as</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="Pending">Pending approval</mat-option>
+              <mat-option value="Draft">Draft</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="ems-auth__note" *ngIf="projectOptions.length === 0">
+          <mat-icon>info</mat-icon>
+          <span>No projects are available yet. Ask an admin to create a project or assign you a task first.</span>
+        </div>
+
+        <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <div class="ems-form-actions">
+          <button mat-stroked-button type="button" (click)="form.reset({ date: maxDate, hours: 8, status: 'Pending' })">
+            Clear
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+            <mat-icon>send</mat-icon>
+            {{ submitting ? 'Submitting…' : 'Submit entry' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="ems-card">
+      <h2 class="ems-section-title"><mat-icon>history</mat-icon> Your latest entries</h2>
+
+      <ul class="ems-rows" *ngIf="recent.length; else noEntries">
+        <li class="ems-rows__item" *ngFor="let entry of recent | slice: 0:6">
+          <span class="ems-rows__main">
+            <strong>{{ entry.project }}</strong>
+            <small>{{ entry.date }}</small>
+          </span>
+          <span class="ems-rows__side">
+            <span class="ems-rows__hours">{{ entry.hours }}h</span>
+            <span class="ems-badge" [ngClass]="statusBadge(entry.status)">{{ entry.status }}</span>
+          </span>
+        </li>
+      </ul>
+
+      <ng-template #noEntries>
+        <div class="ems-empty">
+          <mat-icon>schedule</mat-icon>
+          <h3>Nothing logged yet</h3>
+          <p>Your submitted entries will appear here.</p>
+        </div>
+      </ng-template>
+
+      <a mat-stroked-button class="ts-view-all" routerLink="/timesheets">View full history</a>
+    </aside>
+  </div>
+</section>

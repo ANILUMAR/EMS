@@ -1,0 +1,110 @@
+<div class="ems-auth">
+  <section class="ems-auth__brand">
+    <div class="ems-auth__logo">
+      <span class="ems-auth__mark"><mat-icon>hub</mat-icon></span>
+      Employee Suite
+    </div>
+
+    <h1 class="ems-auth__headline">Onboard your team in <em>minutes</em>.</h1>
+    <p class="ems-auth__lead">
+      Create an account to get a workspace with tasks, projects and timesheets already wired up.
+    </p>
+
+    <ul class="ems-auth__points">
+      <li>
+        <mat-icon>person_add</mat-icon>
+        <span><strong>Role based access</strong>Admins, developers and testers each get the right views.</span>
+      </li>
+      <li>
+        <mat-icon>folder_shared</mat-icon>
+        <span><strong>Projects in one place</strong>Everything a new joiner needs, from day one.</span>
+      </li>
+      <li>
+        <mat-icon>shield</mat-icon>
+        <span><strong>Secure by default</strong>Passwords are stored hashed, sessions use signed tokens.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="ems-auth__panel">
+    <div class="ems-auth__card ems-auth__card--wide">
+      <span class="ems-auth__eyebrow">Get started</span>
+      <h2>Create your account</h2>
+      <p class="ems-auth__sub">All fields marked required are needed to sign in later.</p>
+
+      <div class="ems-auth__note" *ngIf="message">
+        <mat-icon>info</mat-icon>
+        <span>{{ message }}</span>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="ems-auth__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Full name</mat-label>
+            <input matInput formControlName="name" />
+            <mat-icon matPrefix>person_outline</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Work email</mat-label>
+            <input matInput formControlName="email" type="email" />
+            <mat-icon matPrefix>mail_outline</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" />
+            <mat-icon matPrefix>lock_outline</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option value="ADMIN">Admin</mat-option>
+              <mat-option value="EMPLOYEE">Developer</mat-option>
+              <mat-option value="TESTER">Tester</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone number</mat-label>
+            <input matInput formControlName="phoneNumber" />
+            <mat-icon matPrefix>call</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" />
+            <mat-icon matPrefix>home</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <label class="ems-filepick" for="fileInput">
+          <mat-icon>attach_file</mat-icon>
+          <span *ngIf="!selectedFile">Attach a photo or resume (PDF, DOC, PNG, JPG — max 5 MB)</span>
+          <span *ngIf="selectedFile" class="ems-filepick__name">{{ selectedFile.name }}</span>
+        </label>
+        <input
+          type="file"
+          id="fileInput"
+          (change)="onFileSelected($event)"
+          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+          hidden
+        />
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="registerForm.invalid"
+          class="ems-auth__submit">
+          Create account
+        </button>
+      </form>
+
+      <div class="ems-auth__foot">
+        <span>Already registered? <a class="ems-auth__link" routerLink="/login">Sign in instead</a></span>
+      </div>
+    </div>
+  </section>
+</div>

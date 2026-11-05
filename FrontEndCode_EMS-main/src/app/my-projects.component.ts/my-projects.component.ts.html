@@ -1,0 +1,117 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">My projects</h1>
+      <p class="ems-page-subtitle">Work grouped by the projects you are assigned to.</p>
+    </div>
+    <div class="ems-actions">
+      <button mat-stroked-button matTooltip="Reload your projects" (click)="reload()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Projects</span>
+      <span class="ems-stat__value">{{ myProjectCount }}</span>
+      <span class="ems-stat__hint">You are involved in</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">My tasks</span>
+      <span class="ems-stat__value">{{ myTaskCount }}</span>
+      <span class="ems-stat__hint">Assigned to you</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Due soon</span>
+      <span class="ems-stat__value">{{ dueSoonCount }}</span>
+      <span class="ems-stat__hint">Next 7 days</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Overdue</span>
+      <span class="ems-stat__value">{{ overdueCount }}</span>
+      <span class="ems-stat__hint">Needs attention</span>
+    </article>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="mp-grid" *ngIf="rows.length; else noProjects">
+    <article class="ems-card mp-card" *ngFor="let row of rows">
+      <header class="mp-card__head">
+        <div class="mp-card__id">
+          <h2>{{ row.name }}</h2>
+          <p>{{ row.description }}</p>
+        </div>
+        <span class="ems-badge" [ngClass]="row.statusClass">{{ row.status }}</span>
+      </header>
+
+      <div class="ems-pipeline" *ngIf="row.progress !== null; else noTracking">
+        <div class="ems-pipeline__row">
+          <div class="ems-pipeline__meta">
+            <strong>Delivery progress</strong>
+            <span class="ems-dim">{{ row.done }} of {{ row.tracked }} tasks done</span>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill" [ngClass]="fillClass(row.progress)" [style.width.%]="row.progress"></span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noTracking>
+        <p class="mp-none">No tracked tasks recorded for this project yet.</p>
+      </ng-template>
+
+      <ul class="mp-meta">
+        <li>
+          <mat-icon>assignment</mat-icon>
+          <span>{{ row.myTasks.length }} assigned to you</span>
+        </li>
+        <li>
+          <mat-icon>event</mat-icon>
+          <span>{{ row.nextDue ? 'Next due ' + row.nextDue : 'No due date set' }}</span>
+        </li>
+        <li *ngIf="row.overdue">
+          <mat-icon>warning</mat-icon>
+          <span class="is-overdue">{{ row.overdue }} overdue</span>
+        </li>
+      </ul>
+
+      <div class="ems-chip-row mp-tasks">
+        <span class="mp-task" *ngFor="let task of row.myTasks | slice: 0:4" [class.is-overdue]="isOverdue(task)">
+          {{ task.taskTitle }}
+        </span>
+        <span class="mp-task mp-task--more" *ngIf="row.myTasks.length > 4">+{{ row.myTasks.length - 4 }} more</span>
+      </div>
+
+      <footer class="mp-card__foot">
+        <span class="mp-team" *ngIf="row.team.length; else solo">
+          <span class="ems-avatar-sm" *ngFor="let person of row.team | slice: 0:4">{{ initials(person) }}</span>
+        </span>
+        <ng-template #solo>
+          <span class="ems-dim">Only you on this project</span>
+        </ng-template>
+
+        <a mat-stroked-button routerLink="/tasks">
+          <mat-icon>open_in_new</mat-icon>
+          View tasks
+        </a>
+      </footer>
+    </article>
+  </div>
+
+  <ng-template #noProjects>
+    <div class="ems-empty">
+      <mat-icon>workspaces</mat-icon>
+      <h3>No projects assigned yet</h3>
+      <p>Once work is assigned to you, it is grouped here by project.</p>
+      <a mat-stroked-button class="ems-empty__cta" routerLink="/tasks">Open the task board</a>
+    </div>
+  </ng-template>
+</section>

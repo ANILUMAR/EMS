@@ -1,0 +1,202 @@
+<div class="ems-page">
+  <div class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Welcome back, {{ firstName }}</h1>
+      <p class="ems-page-subtitle">
+        {{ today | date:'EEEE, d MMMM y' }} · {{ userRole }} workspace
+      </p>
+    </div>
+
+    <div class="ems-actions">
+      <button mat-stroked-button (click)="openHelpDialog(helpDialog)">
+        <mat-icon>help_outline</mat-icon>
+        Guide
+      </button>
+      <a mat-flat-button color="primary" routerLink="/tasks/new">
+        <mat-icon>add</mat-icon>
+        New task
+      </a>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- live counters -->
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Team members</span>
+      <strong class="ems-stat__value">{{ teamSize }}</strong>
+      <span class="ems-stat__hint">
+        <a routerLink="/people/accounts">Manage people</a>
+      </span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Projects</span>
+      <strong class="ems-stat__value">{{ projectCount }}</strong>
+      <span class="ems-stat__hint">
+        <a routerLink="/projects">Project overview</a>
+      </span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Open tasks</span>
+      <strong class="ems-stat__value">{{ openTaskCount }}</strong>
+      <span class="ems-stat__hint">{{ inProgressCount }} in progress · {{ todoCount }} to do</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Hours logged</span>
+      <strong class="ems-stat__value">{{ totalHours }}<small>h</small></strong>
+      <span class="ems-stat__hint">{{ timesheets.length }} timesheet entries</span>
+    </article>
+  </div>
+
+  <div class="ems-dash-grid">
+    <!-- task pipeline -->
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>view_kanban</mat-icon>
+        Task pipeline
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && tasks.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>No tasks yet</h3>
+        <p>Create the first task to start tracking delivery.</p>
+        <a mat-stroked-button routerLink="/tasks/new" class="ems-empty__cta">Create task</a>
+      </div>
+
+      <div class="ems-pipeline" *ngIf="tasks.length > 0">
+        <div class="ems-pipeline__row" *ngFor="let item of statusBreakdown">
+          <div class="ems-pipeline__meta">
+            <span class="ems-badge" [ngClass]="{
+              'ems-badge--neutral': item.tone === 'neutral',
+              'ems-badge--info': item.tone === 'info',
+              'ems-badge--success': item.tone === 'success'
+            }">{{ item.label }}</span>
+            <strong>{{ item.count }}</strong>
+          </div>
+          <div class="ems-pipeline__track">
+            <span class="ems-pipeline__fill" [ngClass]="'is-' + item.tone" [style.width.%]="item.percent"></span>
+          </div>
+        </div>
+
+        <div class="ems-pipeline__summary">
+          <div>
+            <span class="ems-pipeline__summary-value">{{ completionRate }}%</span>
+            <span class="ems-pipeline__summary-label">completed across {{ tasks.length }} tasks</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- quick actions -->
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>bolt</mat-icon>
+        Quick actions
+      </h2>
+
+      <div class="ems-quick">
+        <a class="ems-quick__item" routerLink="/tasks/new">
+          <mat-icon>add_task</mat-icon>
+          <span><strong>Assign a task</strong><small>Give someone their next piece of work</small></span>
+        </a>
+        <a class="ems-quick__item" routerLink="/timesheets">
+          <mat-icon>table_view</mat-icon>
+          <span><strong>Review timesheets</strong><small>Approve hours logged this week</small></span>
+        </a>
+        <a class="ems-quick__item" routerLink="/people">
+          <mat-icon>groups</mat-icon>
+          <span><strong>Employee directory</strong><small>Browse the full team and their roles</small></span>
+        </a>
+        <a class="ems-quick__item" routerLink="/tasks">
+          <mat-icon>list_alt</mat-icon>
+          <span><strong>Task board</strong><small>Open everything currently in flight</small></span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div class="ems-dash-grid">
+    <!-- projects -->
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>folder_open</mat-icon>
+        Project health
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && projectRows.length === 0">
+        <mat-icon>folder_off</mat-icon>
+        <h3>No projects yet</h3>
+        <p>Projects group tasks and timesheets together.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="projectRows.length > 0">
+        <li class="ems-rows__item" *ngFor="let project of projectRows">
+          <div class="ems-rows__main">
+            <strong>{{ project.name }}</strong>
+            <small>{{ project.description || 'No description' }}</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge ems-badge--neutral">{{ project.doneCount }}/{{ project.taskCount }} done</span>
+            <div class="ems-pipeline__track ems-pipeline__track--sm">
+              <span class="ems-pipeline__fill is-info" [style.width.%]="project.progress"></span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- timesheets -->
+    <section class="ems-card">
+      <h2 class="ems-section-title">
+        <mat-icon>schedule</mat-icon>
+        Latest timesheets
+      </h2>
+
+      <div class="ems-empty" *ngIf="!loading && recentTimesheets.length === 0">
+        <mat-icon>event_busy</mat-icon>
+        <h3>No hours logged</h3>
+        <p>Timesheet entries appear here as the team submits them.</p>
+      </div>
+
+      <ul class="ems-rows" *ngIf="recentTimesheets.length > 0">
+        <li class="ems-rows__item" *ngFor="let entry of recentTimesheets">
+          <div class="ems-rows__main">
+            <strong>{{ entry.employeeName || 'Unknown' }}</strong>
+            <small>{{ entry.project || 'Unassigned project' }} · {{ entry.date }}</small>
+          </div>
+          <div class="ems-rows__side">
+            <span class="ems-badge" [ngClass]="{
+              'ems-badge--success': entry.status === 'APPROVED',
+              'ems-badge--warning': entry.status === 'PENDING',
+              'ems-badge--neutral': !entry.status || (entry.status !== 'APPROVED' && entry.status !== 'PENDING')
+            }">{{ entry.status || 'LOGGED' }}</span>
+            <span class="ems-rows__hours">{{ entry.hours }}h</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<ng-template #helpDialog>
+  <h2 mat-dialog-title>Dashboard guide</h2>
+  <mat-dialog-content>
+    <p>Every number on this page is read live from the database.</p>
+    <ul>
+      <li><strong>Team members</strong> — accounts registered in the system.</li>
+      <li><strong>Projects</strong> — projects stored against the team.</li>
+      <li><strong>Open tasks</strong> — everything not yet marked done.</li>
+      <li><strong>Hours logged</strong> — total of all timesheet entries.</li>
+    </ul>
+  </mat-dialog-content>
+  <div mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" mat-dialog-close>Got it</button>
+  </div>
+</ng-template>

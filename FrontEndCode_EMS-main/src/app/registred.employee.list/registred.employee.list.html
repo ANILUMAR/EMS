@@ -1,0 +1,124 @@
+<section class="ems-page">
+  <header class="ems-page-head">
+    <div>
+      <h1 class="ems-page-title">Registered employees</h1>
+      <p class="ems-page-subtitle">Account records created for this workspace.</p>
+    </div>
+    <div class="ems-actions">
+      <button mat-stroked-button matTooltip="Reload accounts" (click)="reload()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <a mat-flat-button color="primary" routerLink="/register">
+        <mat-icon>person_add</mat-icon>
+        Add employee
+      </a>
+    </div>
+  </header>
+
+  <div class="ems-stat-grid">
+    <article class="ems-stat">
+      <span class="ems-stat__label">Accounts</span>
+      <span class="ems-stat__value">{{ employees.length }}</span>
+      <span class="ems-stat__hint">Total registered users</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Admins</span>
+      <span class="ems-stat__value">{{ adminCount }}</span>
+      <span class="ems-stat__hint">Workspace administrators</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">Employees</span>
+      <span class="ems-stat__value">{{ employeeCount }}</span>
+      <span class="ems-stat__hint">Standard access</span>
+    </article>
+
+    <article class="ems-stat">
+      <span class="ems-stat__label">New this month</span>
+      <span class="ems-stat__value">{{ newThisMonth }}</span>
+      <span class="ems-stat__hint">Accounts created since the 1st</span>
+    </article>
+  </div>
+
+  <div class="ems-toolbar reg-toolbar">
+    <mat-form-field appearance="outline" class="ems-search">
+      <mat-label>Search accounts</mat-label>
+      <input matInput [(ngModel)]="search" placeholder="Name, email, phone…" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="ems-chip-row">
+      <button type="button" class="ems-chip" [class.is-active]="role === 'ALL'" (click)="role = 'ALL'">
+        All
+      </button>
+      <button type="button" class="ems-chip" [class.is-active]="role === 'ADMIN'" (click)="role = 'ADMIN'">
+        Admin
+      </button>
+      <button type="button" class="ems-chip" [class.is-active]="role === 'EMPLOYEE'" (click)="role = 'EMPLOYEE'">
+        Employee
+      </button>
+    </div>
+  </div>
+
+  <div class="ems-auth__note ems-auth__note--error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="ems-table-wrap" *ngIf="filteredEmployees.length; else noAccounts">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Role</th>
+          <th>Phone</th>
+          <th>Location</th>
+          <th>Registered</th>
+          <th class="reg-actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of filteredEmployees">
+          <td>
+            <span class="reg-person">
+              <img
+                *ngIf="hasPhoto(employee); else initialsTpl"
+                class="reg-person__avatar"
+                [src]="photoUrl(employee)"
+                [alt]="employee.name"
+                (error)="onImageError(employee)" />
+              <ng-template #initialsTpl>
+                <span class="reg-person__avatar reg-person__avatar--initials">{{ initials(employee.name) }}</span>
+              </ng-template>
+
+              <span class="ems-rows__main">
+                <strong>{{ employee.name || 'Unnamed employee' }}</strong>
+                <small>{{ employee.email }}</small>
+              </span>
+            </span>
+          </td>
+          <td><span class="ems-badge" [ngClass]="roleBadge(employee.role)">{{ roleLabel(employee.role) }}</span></td>
+          <td>{{ employee.phoneNumber || '—' }}</td>
+          <td>{{ employee.address || '—' }}</td>
+          <td>{{ registeredOn(employee) }}</td>
+          <td class="reg-actions-col">
+            <button mat-icon-button matTooltip="Edit account" (click)="editEmployee(employee)" aria-label="Edit account">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #noAccounts>
+    <div class="ems-empty">
+      <mat-icon>badge</mat-icon>
+      <h3>No accounts match this view</h3>
+      <p>Try another search term or role filter.</p>
+      <a mat-stroked-button class="ems-empty__cta" routerLink="/register">Register an employee</a>
+    </div>
+  </ng-template>
+</section>

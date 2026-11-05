@@ -1,0 +1,37 @@
+:host { display: block; }
+
+.reg-toolbar {
+  margin: 18px 0 14px;
+}
+
+.reg-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.reg-person__avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--ems-border);
+  background: var(--ems-surface-3);
+}
+
+.reg-person__avatar--initials {
+  display: grid;
+  place-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ems-primary);
+  background: var(--ems-primary-soft);
+  border-color: rgba(123, 156, 255, 0.28);
+}
+
+.reg-actions-col {
+  width: 72px;
+  text-align: right;
+}
