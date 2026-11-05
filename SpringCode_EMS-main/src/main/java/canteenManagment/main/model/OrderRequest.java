@@ -21,6 +21,7 @@ public class OrderRequest {
             this.orders = Collections.singletonList(singleOrder);
         } else if (input instanceof List) {
             // Multiple orders
+            //Testing the branch
             this.orders = ((List<?>) input).stream()
                 .map(item -> new ObjectMapper().convertValue(item, Order.class))
                 .collect(Collectors.toList());
